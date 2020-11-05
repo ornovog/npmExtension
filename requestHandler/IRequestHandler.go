@@ -6,6 +6,6 @@ import (
 )
 
 type IRequestHandler interface {
-	HandleRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params)
+	HandleJsonFormatRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params)
 	HandleTreeFormatRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params)
 }

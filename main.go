@@ -15,7 +15,7 @@ func newRouter() *httprouter.Router{
 	handler := reqHandle.NewRequestHandler()
 
 	router := httprouter.New()
-	router.GET("/package/:name/:version", handler.HandleRequest)
+	router.GET("/package/:name/:version", handler.HandleJsonFormatRequest)
 	router.GET("/package/:name/:version/tree-format", handler.HandleTreeFormatRequest)
 
 	return router

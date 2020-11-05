@@ -9,30 +9,32 @@ import (
 
 type requestHandler struct{
 	dependenciesTreeGenerator treeGen.IDependenciesTreeGenerator
-	printedTreeGenerator treeStr.IDependenciesTreeToString
 }
 
 func NewRequestHandler() requestHandler{
 	dependenciesTreeGenerator := treeGen.NewDependenciesTreeGenerator()
-	printedTreeGenerator := treeStr.NewJsonFormat()
-
-	return requestHandler{dependenciesTreeGenerator: dependenciesTreeGenerator, printedTreeGenerator: printedTreeGenerator}
+	return requestHandler{dependenciesTreeGenerator: dependenciesTreeGenerator}
 }
 
-func (handler requestHandler) HandleRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params){
+func (handler requestHandler) HandleJsonFormatRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params){
+	treeFormat := treeStr.NewJsonFormat()
+	handler.HandleRequest(response, params, treeFormat)
+}
+
+func (handler requestHandler) HandleTreeFormatRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params){
+	treeFormat := treeStr.NewTreeFormat()
+	handler.HandleRequest(response, params, treeFormat)
+}
+
+func (handler requestHandler) HandleRequest(response http.ResponseWriter, params httprouter.Params,
+											printedTreeGenerator treeStr.IDependenciesTreeToString){
 	package_ := extractPackageFromRoutParams(params)
 
 	dependenciesTree := handler.dependenciesTreeGenerator.GetPackageDependenciesTree(package_)
 
-	dependenciesTreeStr := handler.printedTreeGenerator.DependenciesTreeToString(dependenciesTree)
+	dependenciesTreeStr := printedTreeGenerator.DependenciesTreeToString(dependenciesTree)
 
 	response.Write([]byte(dependenciesTreeStr))
-}
-
-func (handler requestHandler) HandleTreeFormatRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params){
-	handler.printedTreeGenerator = treeStr.NewTreeFormat()
-	handler.HandleRequest(response,nil,params)
-	handler.printedTreeGenerator = treeStr.NewJsonFormat()
 }
 
 func extractPackageFromRoutParams(params httprouter.Params) treeGen.Package{
