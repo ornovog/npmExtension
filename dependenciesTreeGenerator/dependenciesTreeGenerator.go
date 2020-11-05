@@ -1,39 +1,41 @@
 package dependenciesTreeGenerator
 
 type dependenciesTreeGenerator struct {
+	querier npmQuerier
 }
 
 func NewDependenciesTreeGenerator() dependenciesTreeGenerator{
-	return dependenciesTreeGenerator{}
+	querier := NewNpmQuerier()
+	return dependenciesTreeGenerator{querier: querier}
 }
 
-func (_ dependenciesTreeGenerator) GetPackageDependenciesTree(package_ Package) PackageNode{
+func (d dependenciesTreeGenerator) GetPackageDependenciesTree(package_ Package) PackageNode{
 	packageRoot := PackageNode{Package: package_}
-	fillDependenciesTreeBfs(&packageRoot)
+	d.fillDependenciesTreeBfs(&packageRoot)
+	UpdateDependenciesBySemanticVersion(&packageRoot)
 	return packageRoot
 }
 
-func fillDependenciesTreeBfs(packageNode *PackageNode){
-	npmPackageDependencies := GetNpmDependencies(packageNode.Package)
+func (d *dependenciesTreeGenerator)fillDependenciesTreeBfs(packageNode *PackageNode){
+	npmPackageDependencies := d.querier.GetNpmDependencies(packageNode.Package)
 	if len(npmPackageDependencies) == 0{
 		return
 	}
 
 	packageNode.Dependencies = npmDependenciesToPackageNodes(npmPackageDependencies)
-
 	for i, _ := range packageNode.Dependencies {
-		fillDependenciesTreeBfs(&packageNode.Dependencies[i])
+		d.fillDependenciesTreeBfs(&packageNode.Dependencies[i])
 	}
 }
 
 func npmDependenciesToPackageNodes(npmDependencies map[string]string)[]PackageNode{
-	dependencies := make([]PackageNode, len(npmDependencies))
+	dependencies := make([]PackageNode, 0, len(npmDependencies))
 
-	index := 0
 	for name, version := range npmDependencies {
 		dependencyPackage := Package{Name: name, Version: version}
-		dependencies[index] = PackageNode{Package:dependencyPackage}
-		index++
+		packageNode := PackageNode{Package:dependencyPackage}
+
+		dependencies = append(dependencies, packageNode)
 	}
 
 	return dependencies

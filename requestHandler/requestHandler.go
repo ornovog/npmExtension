@@ -17,7 +17,7 @@ func NewRequestHandler() requestHandler{
 }
 
 func (handler requestHandler) HandleJsonFormatRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params){
-	treeFormat := treeStr.NewJsonFormat()
+	treeFormat := treeStr.NewJsonFlatFormat()
 	handler.HandleRequest(response, params, treeFormat)
 }
 
