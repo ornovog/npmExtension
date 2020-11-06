@@ -4,7 +4,10 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	treeGen "npmExtension/dependenciesTreeGenerator"
+	"npmExtension/dependenciesTreeGenerator/treeGeneratorImplementaion"
 	treeStr "npmExtension/dependenciesTreeToString"
+	jsonForm "npmExtension/dependenciesTreeToString/jsonFlatFormat"
+	treeForm "npmExtension/dependenciesTreeToString/treeFormat"
 )
 
 type requestHandler struct{
@@ -12,21 +15,21 @@ type requestHandler struct{
 }
 
 func NewRequestHandler() requestHandler{
-	dependenciesTreeGenerator := treeGen.NewDependenciesTreeGenerator()
+	dependenciesTreeGenerator := treeGeneratorImplementaion.NewDependenciesTreeGenerator()
 	return requestHandler{dependenciesTreeGenerator: dependenciesTreeGenerator}
 }
 
 func (handler requestHandler) HandleJsonFormatRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params){
-	treeFormat := treeStr.NewJsonFlatFormat()
-	handler.HandleRequest(response, params, treeFormat)
+	treeFormat := jsonForm.NewJsonFlatFormat()
+	handler.handleRequest(response, params, treeFormat)
 }
 
 func (handler requestHandler) HandleTreeFormatRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params){
-	treeFormat := treeStr.NewTreeFormat()
-	handler.HandleRequest(response, params, treeFormat)
+	treeFormat := treeForm.NewTreeFormat()
+	handler.handleRequest(response, params, treeFormat)
 }
 
-func (handler requestHandler) HandleRequest(response http.ResponseWriter, params httprouter.Params,
+func (handler requestHandler) handleRequest(response http.ResponseWriter, params httprouter.Params,
 											printedTreeGenerator treeStr.IDependenciesTreeToString){
 	package_ := extractPackageFromRoutParams(params)
 

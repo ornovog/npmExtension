@@ -1,6 +1,7 @@
-package dependenciesTreeGenerator
+package semanticVersioning
 
 import (
+	"npmExtension/dependenciesTreeGenerator"
 	"strconv"
 	"strings"
 )
@@ -11,7 +12,7 @@ type packageNameAndMajorNum struct {
 }
 
 
-func UpdateDependenciesBySemanticVersion(rootPackage *PackageNode){
+func UpdateDependenciesBySemanticVersion(rootPackage *dependenciesTreeGenerator.PackageNode){
 	packageQueue := NewQueue()
 	packageQueue.Enqueue(rootPackage)
 
@@ -24,6 +25,7 @@ func updateDependenciesBfs(packageQueue queue, mostUpToDateVersions map[packageN
 	}
 
 	package_ := packageQueue.Dequeue()
+
 	version := package_.Package.Version
 	name := package_.Package.Name
 
@@ -67,7 +69,6 @@ func updateMostUpToDateVersions(mostUpToDateVersions map[packageNameAndMajorNum]
 		}
 	}
 }
-
 func isMoreUpToDateVersion(minor1, patch1,  minor2, patch2 int)bool{
 	if minor1 > minor2 || (minor1 == minor2 && patch1 >= patch2){
 		return true
@@ -76,7 +77,7 @@ func isMoreUpToDateVersion(minor1, patch1,  minor2, patch2 int)bool{
 	return false
 }
 
-func iterateDependenciesBfs(package_ *PackageNode, packageQueue queue,
+func iterateDependenciesBfs(package_ *dependenciesTreeGenerator.PackageNode, packageQueue queue,
 							mostUpToDateVersions map[packageNameAndMajorNum]string) {
 	for i, _ := range package_.Dependencies {
 		dependency := &package_.Dependencies[i]

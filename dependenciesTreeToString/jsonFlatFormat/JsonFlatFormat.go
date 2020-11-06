@@ -1,30 +1,19 @@
-package dependenciesTreeToString
+package jsonFlatFormat
 
 import (
 	"encoding/json"
-	treeGen "npmExtension/dependenciesTreeGenerator"
+	inter "npmExtension/dependenciesTreeGenerator"
 )
 
 type jsonFlatFormat struct {
 
 }
 
-type flatFormatData struct {
-	PackageName string
-	DependencyToVersions stringToStringSlice
-}
-
-type stringToStringSlice map[string][]string
-
-type stringToStringSet map[string]stringSet
-
-type stringSet map[string]bool
-
-func NewJsonFlatFormat() jsonFlatFormat{
+func NewJsonFlatFormat() jsonFlatFormat {
 	return jsonFlatFormat{}
 }
 
-func (_ jsonFlatFormat) DependenciesTreeToString(packageNode treeGen.PackageNode) string {
+func (_ jsonFlatFormat) DependenciesTreeToString(packageNode inter.PackageNode) string {
 	packageName := packageNode.Package.Name
 	dependencyToVersions := getDependencyNameToVersionsSlices(packageNode)
 
@@ -35,7 +24,7 @@ func (_ jsonFlatFormat) DependenciesTreeToString(packageNode treeGen.PackageNode
 	return string(dependenciesJson)
 }
 
-func getDependencyNameToVersionsSlices(packageRoot treeGen.PackageNode)stringToStringSlice{
+func getDependencyNameToVersionsSlices(packageRoot inter.PackageNode) stringToStringSlice {
 	firstLevelDependencies := packageRoot.Dependencies
 	dependencyNameToVersionsSet := stringToStringSet{}
 	fillDependencyNameToVersionsSet(firstLevelDependencies, dependencyNameToVersionsSet)
@@ -45,7 +34,7 @@ func getDependencyNameToVersionsSlices(packageRoot treeGen.PackageNode)stringToS
 	return versionsSlices
 }
 
-func fillDependencyNameToVersionsSet(dependenciesInCurrentLevel []treeGen.PackageNode,
+func fillDependencyNameToVersionsSet(dependenciesInCurrentLevel []inter.PackageNode,
 	                          dependencyNameToVersionsSet stringToStringSet) {
 	for _, dependency := range dependenciesInCurrentLevel{
 		name := dependency.Package.Name
@@ -65,7 +54,7 @@ func updateDependencyNameToVersionsSet(dependencyNameToVersionsSet stringToStrin
 	dependencyNameToVersionsSet[name][version] = true
 }
 
-func versionsSetsToVersionsSlices(dependencyNameToVersionsSet stringToStringSet) stringToStringSlice{
+func versionsSetsToVersionsSlices(dependencyNameToVersionsSet stringToStringSet) stringToStringSlice {
 	versionsSlices := stringToStringSlice{}
 
 	for dependencyName, versionSet := range dependencyNameToVersionsSet {
