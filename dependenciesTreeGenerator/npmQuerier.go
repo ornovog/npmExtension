@@ -10,10 +10,10 @@ import (
 var url = "https://registry.npmjs.org/"
 
 type ResponseBody struct {
-	Name        string `json:"name"`
-	Description string  `json:"description"`
-	DistTags    map[string]string  `json:"dist-tags"`
-	Package    PackageData 	`json:"versions"`
+	Name        string            `json:"name"`
+	Description string            `json:"description"`
+	DistTags    map[string]string `json:"dist-tags"`
+	Package     PackageData       `json:"versions"`
 }
 
 type VersionData struct {
@@ -28,7 +28,7 @@ type npmQuerier struct {
 	packagesDataCache map[string]PackageData
 }
 
-func NewNpmQuerier() npmQuerier{
+func NewNpmQuerier() npmQuerier {
 	q := npmQuerier{}
 	q.packagesDataCache = make(map[string]PackageData, 0)
 	return q

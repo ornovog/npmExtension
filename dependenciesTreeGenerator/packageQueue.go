@@ -4,7 +4,7 @@ type queue struct {
 	slice	[]*PackageNode
 }
 
-func NewQueue() queue{
+func NewQueue() queue {
 	q := queue{}
 	q.slice = make([]*PackageNode, 0)
 	return q

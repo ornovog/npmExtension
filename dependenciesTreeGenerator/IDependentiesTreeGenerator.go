@@ -1,7 +1,7 @@
 package dependenciesTreeGenerator
 
 type IDependenciesTreeGenerator interface {
-	GetPackageDependenciesTree(p Package)PackageNode
+	GetPackageDependenciesTree(package_ Package)PackageNode
 }
 
 type Package struct{

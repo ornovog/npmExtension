@@ -76,7 +76,8 @@ func isMoreUpToDateVersion(minor1, patch1,  minor2, patch2 int)bool{
 	return false
 }
 
-func iterateDependenciesBfs(package_ *PackageNode, packageQueue queue, mostUpToDateVersions map[packageNameAndMajorNum]string) {
+func iterateDependenciesBfs(package_ *PackageNode, packageQueue queue,
+							mostUpToDateVersions map[packageNameAndMajorNum]string) {
 	for i, _ := range package_.Dependencies {
 		dependency := &package_.Dependencies[i]
 		packageQueue.Enqueue(dependency)

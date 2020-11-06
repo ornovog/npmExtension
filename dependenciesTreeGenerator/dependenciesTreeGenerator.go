@@ -1,7 +1,7 @@
 package dependenciesTreeGenerator
 
 type dependenciesTreeGenerator struct {
-	querier npmQuerier
+	querier npmQuerier.npmQuerier
 }
 
 func NewDependenciesTreeGenerator() dependenciesTreeGenerator{
