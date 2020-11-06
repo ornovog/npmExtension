@@ -12,21 +12,28 @@ import (
 
 type requestHandler struct{
 	dependenciesTreeGenerator treeGen.IDependenciesTreeGenerator
+	treeFormat treeStr.IDependenciesTreeToString
+	jsonFormat treeStr.IDependenciesTreeToString
 }
 
 func NewRequestHandler() requestHandler{
 	dependenciesTreeGenerator := treeGeneratorImplementaion.NewDependenciesTreeGenerator()
-	return requestHandler{dependenciesTreeGenerator: dependenciesTreeGenerator}
+	treeFormat := treeForm.NewTreeFormat()
+	jsonFormat := jsonForm.NewJsonFlatFormat()
+
+	handler:= requestHandler{dependenciesTreeGenerator: dependenciesTreeGenerator,
+	                      treeFormat: treeFormat,
+	                      jsonFormat: jsonFormat}
+	return handler
 }
 
-func (handler requestHandler) HandleJsonFormatRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params){
-	treeFormat := jsonForm.NewJsonFlatFormat()
-	handler.handleRequest(response, params, treeFormat)
+func (handler requestHandler) HandleJsonFormatRequest(response http.ResponseWriter, _ *http.Request,
+													  params httprouter.Params){
+	handler.handleRequest(response, params, handler.jsonFormat)
 }
 
 func (handler requestHandler) HandleTreeFormatRequest(response http.ResponseWriter, _ *http.Request, params httprouter.Params){
-	treeFormat := treeForm.NewTreeFormat()
-	handler.handleRequest(response, params, treeFormat)
+	handler.handleRequest(response, params, handler.treeFormat)
 }
 
 func (handler requestHandler) handleRequest(response http.ResponseWriter, params httprouter.Params,
