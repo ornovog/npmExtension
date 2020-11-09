@@ -1,6 +1,7 @@
 package requestHandler
 
 import (
+	"fmt"
 	"github.com/julienschmidt/httprouter"
 	"net/http"
 	treeGen "npmExtension/dependenciesTreeGenerator"
@@ -40,7 +41,12 @@ func (handler requestHandler) handleRequest(response http.ResponseWriter, params
 											printedTreeGenerator treeStr.IDependenciesTreeToString){
 	package_ := extractPackageFromRoutParams(params)
 
-	dependenciesTree := handler.dependenciesTreeGenerator.GetPackageDependenciesTree(package_)
+	dependenciesTree, err := handler.dependenciesTreeGenerator.GetPackageDependenciesTree(package_)
+	if err!=nil{
+		response.Write([]byte(err.Error()))
+		fmt.Println(err.Error())
+		return
+	}
 
 	dependenciesTreeStr := printedTreeGenerator.DependenciesTreeToString(dependenciesTree)
 

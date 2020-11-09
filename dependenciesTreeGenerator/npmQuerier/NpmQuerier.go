@@ -26,7 +26,7 @@ func (q NpmQuerier) GetNpmDependencies(package_ inter.Package)map[string]string{
 
 	packageData, ok := q.packagesDataCache[packageName]
 	if !ok{
-		packageData = queryNpm(packageName)
+		packageData, _ = queryNpm(packageName)
 		q.packagesDataCache[packageName] = packageData
 	}
 
@@ -36,12 +36,21 @@ func (q NpmQuerier) GetNpmDependencies(package_ inter.Package)map[string]string{
 	return dependencies
 }
 
-func queryNpm(packageName string) packageData {
+func queryNpm(packageName string) (packageData, error) {
 	urlStr := extractNpmUrl(packageName)
-	Response, _ := http.Get(urlStr)
-	RespBody := parseResponse(Response)
-	packageData := RespBody.Package
-	return packageData
+
+	response, err := http.Get(urlStr)
+	if err!=nil{
+		return packageData{},err
+	}
+
+	respBody, _ := parseResponse(response)
+	if err!=nil{
+		return packageData{}, err
+	}
+
+	packageData := respBody.Package
+	return packageData, nil
 }
 
 func extractPackageVersion(package_ inter.Package) string {
@@ -59,13 +68,19 @@ func extractNpmUrl(packageName string) string{
 	return npmUrlStr
 }
 
-func parseResponse(Response *http.Response)responseBody{
-	body, _ := ioutil.ReadAll(Response.Body)
+func parseResponse(Response *http.Response)(responseBody, error){
+	body, err := ioutil.ReadAll(Response.Body)
+	if err!=nil{
+		return responseBody{}, err
+	}
 
 	var respBody responseBody
-	json.Unmarshal(body, &respBody)
+	err = json.Unmarshal(body, &respBody)
+	if err!=nil{
+		return responseBody{}, err
+	}
 
-	return respBody
+	return respBody, nil
 }
 
 
